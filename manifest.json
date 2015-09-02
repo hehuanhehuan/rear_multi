@@ -1,0 +1,162 @@
+{
+  "manifest_version": 2,
+  "name": "rear",
+  "description": "rear",
+  "version": "0.2.62",
+  "update_url": "https://disi.se/index.php/Admin/ExtensionApi/update?app_secret=F$~((kb~AjO*xgn~&appid=camiobamoolfaafmeogminjleginaabg",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_name": "rear",
+    "default_title": "rear",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "background": {
+    "scripts": [
+      "javascripts/jquery-2.1.3.min.js",
+      "javascripts/remote_api.js",
+      "javascripts/dama.js",
+      "scripts/fsUtils.js",
+      "scripts/fsCommands.js",
+      "scripts/fsSSS.js",
+      "scripts/fsNativeAPISupport.js",
+      "scripts/base64.js",
+      "scripts/fsBackground.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "run_at": "document_start",
+      "all_frames": true ,
+      "matches": ["*://*/*"],
+      "js": ["javascripts/jquery-2.1.3.min.js"]
+    },
+    {
+      "application": "页面提醒",
+      "run_at": "document_start",
+      "all_frames": true ,
+      "matches": ["*://*/*"],
+      "css": [
+        "alertify/alertify.core.css",
+        "alertify/alertify.default.css"
+      ],
+      "js": [
+        "alertify/alertify.min.js",
+        "alertify/alertify.func.js"
+      ]
+    },
+    {
+      "matches": ["file:///C:/chrome.html"],
+      "js": ["javascripts/remote_api.js" ,"javascripts/chrome.js"],
+      "run_at": "document_end"
+    },
+
+    {
+      "matches": ["*://*.jd.com/*", "*://*.yhd.com/*"],
+      "js": ["javascripts/remote_api.js","javascripts/show.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://www.jd.com/*"],
+      "js": ["javascripts/jd/index.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://passport.jd.com/uc/login*","https://passport.jd.com/new/login*"],
+      "js": ["javascripts/jd/login.js"],
+      "run_at": "document_end"
+    },
+    {
+      "js":["javascripts/jd/dangerous_verify.js"],
+      "run_at": "document_end",
+      "matches": [ "*://safe.jd.com/dangerousVerify/index.action*"]
+    },
+    {
+      "js":["javascripts/jd/pwd_reset_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://safe.jd.com/resetPwd/reset.action*"]
+    },
+    {
+      "js":["javascripts/jd/list_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://order.jd.com/center/list.action*"]
+    },
+    {
+      "js":["javascripts/jd/search_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://order.jd.com/center/search.action?keyword=*"]
+    },
+    {
+      "js":["javascripts/jd/confirm_receipt_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://order.jd.com/normal/confirmReceipt.action*"]
+    },
+    {
+      "js":["javascripts/jd/show_receive_success_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://order.jd.com/normal/showReceiveSuccess.action*"]
+    },
+    {
+      "js":["javascripts/jd/item_action.js"],
+      "run_at": "document_end",
+      "matches": [ "*://order.jd.com/normal/item.action?*"]
+    },
+    {
+      "js":["javascripts/jd/trade_comment.js"],
+      "run_at": "document_end",
+      "matches": [ "*://club.jd.com/JdVote/TradeComment.aspx*","*://club.jd.com/mycomments/orderEvaluate.action*","*://club.jd.com/index.php?mod=Club2013.Comment&action=orderEvaluate&ruleid=*"]
+    },
+    {
+      "js":["javascripts/jd/home.js"],
+      "run_at": "document_end",
+      "matches": [ "*://home.jd.com/*"]
+    },
+
+    {
+      "js":["javascripts/yhd/login.js"],
+      "run_at": "document_end",
+      "matches": [ "*://passport.yhd.com/passport/login_input.do*"]
+    },
+    {
+      "js":["javascripts/yhd/login_error.js"],
+      "run_at": "document_end",
+      "matches": [ "*://passport.yhd.com/passport/login_error.do*"]
+    },
+    {
+      "js":["javascripts/yhd/myorder.js"],
+      "run_at": "document_end",
+      "matches": [ "*://my.yhd.com/order/myOrder.do*"]
+    },
+    {
+      "js":["javascripts/yhd/product_experience.js"],
+      "run_at": "document_end",
+      "matches": [ "*://e.yhd.com/front-pe/pe/orderProductExperience!orderProductExperience.do*"]
+    },
+    {
+      "js":["javascripts/yhd/total_comment.js"],
+      "run_at": "document_end",
+      "matches": ["*://e.yhd.com/front-pe/pelist/totalComment.do*"]
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "background",
+    "browsingData",
+    "clipboardRead",
+    "clipboardWrite",
+    "cookies",
+    "notifications",
+    "storage",
+    "contextMenus",
+    "nativeMessaging",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ]
+}
