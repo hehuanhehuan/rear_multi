@@ -800,7 +800,7 @@ var observer = new MutationObserver(function(mutations) {
 				}
 
 				if(mutation.target.className == 'img-list-ul' && mutation.addedNodes.length > 0) {
-					sharedImages();
+					//sharedImages();
 				}
 
 			}
@@ -905,6 +905,83 @@ function reportSuccess(msg){
 			},5000);
 		});
 	});
+}
+
+function productInfo(callback){
+	//var task = {
+	//	business_oid : '10177732564',
+	//	item_id : '1713976574'
+	//};
+	var pro = {
+		image : null,
+		name : null,
+		order_at : null,
+		voucher : null,
+		jingdou : null
+	};
+	var pro_info = $('ul[class="pro-info"][oid="'+ task.business_oid +'"][pid="'+ task.item_id +'"]');
+	if(pro_info){
+		pro.image = pro_info.find('li[class="fore1"] .p-info .p-img a img').attr('src');
+		pro.name = pro_info.find('li[class="fore1"] .p-info .p-name a').html();
+		pro.order_at = pro_info.find('li[class="fore2"]').text();
+		pro.voucher = pro_info.find('li.fore3 a.pj').text();
+		pro.jingdou = pro_info.find('li.fore3 span.ypj').text();
+		task.share_info.pro = pro;
+		callback && callback();
+	}else{
+		window.location.reload(true);
+	}
+}
+
+function commentBox(callback){
+	var t = $('ul[class="pro-info"][oid="'+ task.business_oid +'"][pid="'+ task.item_id +'"]').find('li.fore3 a.pj');
+	//var t = $('ul[class="pro-info"][oid="10177732564"][pid="1713976574"]').find('li.fore3 a.pj');
+	var params = {};
+	params.voucherstatus= t.attr('voucherstatus');
+	params.guid=t.attr('guid');
+	params.productId=t.attr('alt');
+	params.cateFirst=t.attr('cateFirst');
+	params.cateSecond=t.attr('cateSecond');
+	params.cateThird=t.attr('cateThird');
+	getTagRecommendsBySkuId(params,callback);
+}
+
+function getTagRecommendsBySkuId(params,callback){
+	var comm = {
+		score : null,
+		tags : [],
+		xinde : null,
+		imgs : []
+	};
+	$.ajax({
+		type:"GET",
+		url:'http://club.jd.com/mycomments/getTagRecommendsBySkuId.action',
+		data:params,
+		dataType:"json",
+		success: function(e) {
+			console.log('success');
+			console.log(e);
+			comm.score = e.commentData.score;
+			comm.xinde = e.commentData.content;
+			var tags = e.commentData.commentTags;
+			for(var i in tags){
+				var tag = tags[i];
+				comm.tags.push(tag.name);
+			}
+
+			var images = e.commentData.images;
+			for(var i in images){
+				var image = images[i];
+				comm.imgs.push("http://img30.360buyimg.com/shaidan/"+image.imgUrl);
+			}
+			task.share_info.comm = comm;
+			callback && callback();
+		},
+		error: function (e) {
+			console.log('error');
+			console.log(e);
+		}
+	});
 
 }
 
@@ -918,11 +995,11 @@ function showSubmit(func){
 		}, 100);
 	} else {
 		console.log("无评价提交");
-		setTimeout(function () {
-			chrome.extension.sendMessage({cmd: 'watchdog'});
-			chrome.extension.sendMessage({cmd: 'share_fail'});
-			//window.location.reload(true);
-		}, 3000);
+		//setTimeout(function () {
+		//	chrome.extension.sendMessage({cmd: 'watchdog'});
+		//	chrome.extension.sendMessage({cmd: 'share_fail'});
+		//	//window.location.reload(true);
+		//}, 3000);
 	}
 
 	func && func();
@@ -980,40 +1057,55 @@ function checkShow(){
 	console.log(share);
 	console.log(pictures);
 	if(share && pictures){
-		var pickbutton = $('#pickbutton_'+task.business_oid+'_'+item_id+':visible');
-		console.log(pickbutton);
-		if(pickbutton.length > 0){
-			orderShow();
-		}else{
-			var item = $("ul[pid='" + item_id + "']");
-			if (item.length > 0) {
-				console.log("找到主商品");
-				var comment_box = $("div[pid='" + item_id + "']:visible");
-				if(comment_box.length > 0){
-					console.log('开始截图');
-					//orderCapture();
-				}else{
-					var pub_share = item.find('.fore3 a').filter(":contains('发表晒单')");
-					if(pub_share.length > 0){
-						pub_share[0].click();
-						orderShow();
+		var pj = $('ul[class="pro-info"][oid="'+ task.business_oid +'"][pid="'+ task.item_id +'"]').find('li.fore3 a.pj')
+		if(pj.html().indexOf('查看评价')!=-1 && pj.attr('voucherstatus')==2){
+			productInfo(function(){
+				commentBox(function () {
+					if(task.share_info.pro && task.share_info.comm){
+						chrome.extension.sendMessage({cmd: 'watchdog'});
+						chrome.extension.sendMessage({cmd: 'share_info',share_info:task.share_info});
 					}else{
-						var show_share = item.find('.fore3 a').filter(":contains('查看')");
-						if(show_share.length > 0){
-							show_share[0].click();
-							setTimeout(function () {
-								chrome.extension.sendMessage({cmd: 'watchdog'});
-								checkShow();
-							},3000);
-						}else{
-
-						}
+						checkShow();
 					}
-				}
-			}else{
-
-			}
+				});
+			});
+		}else{
+			orderShow();
 		}
+		//var pickbutton = $('#pickbutton_'+task.business_oid+'_'+item_id+':visible');
+		//console.log(pickbutton);
+		//if(pickbutton.length > 0){
+		//	orderShow();
+		//}else{
+		//	var item = $("ul[pid='" + item_id + "']");
+		//	if (item.length > 0) {
+		//		console.log("找到主商品");
+		//		var comment_box = $("div[pid='" + item_id + "']:visible");
+		//		if(comment_box.length > 0){
+		//			console.log('开始截图');
+		//			//orderCapture();
+		//		}else{
+		//			var pub_share = item.find('.fore3 a').filter(":contains('发表晒单')");
+		//			if(pub_share.length > 0){
+		//				pub_share[0].click();
+		//				orderShow();
+		//			}else{
+		//				var show_share = item.find('.fore3 a').filter(":contains('查看')");
+		//				if(show_share.length > 0){
+		//					show_share[0].click();
+		//					setTimeout(function () {
+		//						chrome.extension.sendMessage({cmd: 'watchdog'});
+		//						checkShow();
+		//					},3000);
+		//				}else{
+        //
+		//				}
+		//			}
+		//		}
+		//	}else{
+        //
+		//	}
+		//}
 
 	}else{
 		setTimeout(function(){

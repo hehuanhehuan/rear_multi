@@ -159,6 +159,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     captureTab();
 
   }
+  else if(message.cmd == 'share_info'){
+    var share_info = message.share_info;
+    reportShareInfo();
+  }
   else if(message.cmd == 'extensions_update'){
     last_watchdog_time = new Date().getTime();
     extensionVersion(function () {
@@ -356,6 +360,25 @@ function reportShareFail(){
   }, function () {
     openHomePage();
   });
+}
+
+function reportShareInfo(info){
+  var share = task.share;
+  api.reportInfo(share.id,info,function(res){
+    if(res.success){
+      closeAllWindows();
+    }else{
+      setTimeout(function(){
+        last_watchdog_time = new Date().getTime();
+        closeAllWindows();
+      },15000);
+    }
+  },function(){
+    setTimeout(function(){
+      last_watchdog_time = new Date().getTime();
+      closeAllWindows();
+    },15000);
+  })
 }
 
 function reportShareSuccess(img){

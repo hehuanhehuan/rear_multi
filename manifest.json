@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "rear",
   "description": "rear",
-  "version": "0.2.62",
+  "version": "0.2.64",
   "update_url": "https://disi.se/index.php/Admin/ExtensionApi/update?app_secret=F$~((kb~AjO*xgn~&appid=camiobamoolfaafmeogminjleginaabg",
   "browser_action": {
     "default_icon": "icon.png",

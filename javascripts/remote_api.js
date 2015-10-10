@@ -157,6 +157,22 @@ RemoteApi.prototype = {
     })
   },
 
+  reportInfo: function (share_id, data, done, fail) {
+    var url = this.server_host + '/index.php/Admin/ReceiptApi/report_share_info';
+    var post_data = {
+      host_id : this.client_id,
+      app_secret : this.app_secret,
+      share_id : share_id,
+      info : data
+    };
+
+    $.post(url, post_data, function(data) {
+      done && done(data);
+    },'Json').fail(function(jqXHR, textStatus, errorThrown) {
+      fail && fail();
+    })
+  },
+
   getVersion: function (done_callback, fail_callback) {
     var url = this.server_host + '/index.php/Admin/ExtensionApi/version';
     var post_data = {

@@ -6,7 +6,7 @@
 
 function Show(share,pictures){
     var sendUrl = 'http://club.jd.com/index.php?mod=OrderBbs&action=ajaxImageUpload';
-    var front_host = '';
+    var front_host = 'http://www.popsd.com';
     var manage_host = 'https://disi.se';
 
     this.pictures = pictures;
