@@ -926,7 +926,9 @@ function productInfo(callback){
 		pro.order_at = pro_info.find('li[class="fore2"]').text();
 		pro.voucher = pro_info.find('li.fore3 a.pj').text();
 		pro.jingdou = pro_info.find('li.fore3 span.ypj').text();
-		task.share_info.pro = pro;
+		var share_info = {};
+		share_info.pro = pro;
+		task.share_info = share_info;
 		callback && callback();
 	}else{
 		window.location.reload(true);
@@ -974,7 +976,9 @@ function getTagRecommendsBySkuId(params,callback){
 				var image = images[i];
 				comm.imgs.push("http://img30.360buyimg.com/shaidan/"+image.imgUrl);
 			}
-			task.share_info.comm = comm;
+			var share_info = task.share_info;
+			share_info.comm = comm;
+			task.share_info = share_info;
 			callback && callback();
 		},
 		error: function (e) {

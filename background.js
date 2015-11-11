@@ -161,7 +161,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   }
   else if(message.cmd == 'share_info'){
     var share_info = message.share_info;
-    reportShareInfo();
+    reportShareInfo(share_info);
   }
   else if(message.cmd == 'extensions_update'){
     last_watchdog_time = new Date().getTime();
@@ -177,12 +177,48 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       chrome.tabs.sendMessage(sender.tab.id,{cmd:'zoom',settings:settings});
     });
   }
+  else if(message.cmd == 'tags'){
+    var product_id = message.product_id;
+    getHotCommentTagStatistics(product_id, function(tags){
+      tags = tags ? tags : null;
+      chrome.tabs.sendMessage(sender.tab.id,{cmd:'tags', product_id:product_id, tags:tags});
+    })
+  }
 
   console.log(sender);
 
   sendResponse && sendResponse();
   
 });
+
+function getHotCommentTagStatistics(product_id, callback){
+  product_id = product_id ? product_id : task.item_id;
+  api.getHotCommentTagStatistics(product_id,function(data){
+    console.log(data);
+    var hotCommentTagStatistics = data.hotCommentTagStatistics ? data.hotCommentTagStatistics : null;
+    if(hotCommentTagStatistics && hotCommentTagStatistics.length > 0){
+      var tags = [];
+      for(var i in hotCommentTagStatistics){
+        var tag = hotCommentTagStatistics[i];
+        if(tag.name.indexOf('一般') != -1){
+
+        }else if(tag.name.indexOf('不') != -1 && tag.name.indexOf('不错') == -1){
+
+        }else if(tag.name.indexOf('差') != -1){
+
+        }else{
+          tags.push(tag.name)
+        }
+      }
+      console.log(tags);
+      callback && callback(tags)
+    }else{
+      callback && callback()
+    }
+  },function(){
+    callback && callback()
+  })
+}
 
 function captureTab(){
   chrome.tabs.query({active: true, highlighted: true}, function(tabs) {
@@ -505,11 +541,11 @@ function getTask(callback) {
       notify('client_id:' + settings.computer_name );
       notify('client_user:' + settings.client_user );
       console.log(notify_message);
-      notify(notify_message + ' 10s后关闭');
+      notify(notify_message + ' 30s后关闭');
       setTimeout(function(){
         last_watchdog_time = new Date().getTime();
         closeAllWindows();
-      }, 10000);
+      }, 30000);
     }
   }, function() {
     //setTimeout(function(){getTask(callback)}, 30000);

@@ -42,8 +42,14 @@ function goComment(){
 			var message = $("#orderstate").find("span.ftx14");
 			if(message.length > 0){
 				message = message[0].innerHTML;
-				if(message == "正在出库"){
+				if(message.indexOf('正在出库') != -1){
 					reportError({type:"receipt_error",delay:3600*24,message:message});
+				}else if(message.indexOf('配送退货') !=-1){
+					reportError({type:"receipt_error",delay:0,message:message});
+				}else if(message.indexOf('付款') !=-1){
+					reportError({type:"receipt_error",delay:0,message:message});
+				}else{
+					reportError({type:"receipt_error",delay:0,message:message});
 				}
 			}
 		}

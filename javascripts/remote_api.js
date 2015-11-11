@@ -76,6 +76,18 @@ RemoteApi.prototype = {
     }
   },
 
+  reportTags: function(tags,done_callback,fail_callback){
+    var url = this.server_host + "/index.php/Admin/ReceiptApi/report_comment_tags";
+    var post_data = {
+      tags:tags
+    };
+    $.post(url, post_data, function(data) {
+      done_callback && done_callback(data);
+    },'Json').fail(function(jqXHR, textStatus, errorThrown) {
+      fail_callback && fail_callback();
+    });
+  },
+
   reportTask: function(type, order_id, delay, message, done_callback, fail_callback) {
     var url = this.server_host + "/index.php/Admin/ClientApi/report_status";
     var post_data = {
@@ -199,6 +211,45 @@ RemoteApi.prototype = {
     }).fail(function(jqXHR, textStatus, errorThrown) {
       fail_callback && fail_callback();
     });
+  },
+
+  reportReplaceWord : function(words, business_oid, done, fail){
+    var url = this.server_host + '/index.php/Admin/ReceiptApi/report_shielding_words';
+    var data = {
+      app_secret: this.app_secret,
+      words: words,
+      referer: business_oid
+    };
+    $.post(url, data, function(data) {
+      done && done(data);
+    },'Json').fail(function(jqXHR, textStatus, errorThrown) {
+      fail && fail();
+    })
+  },
+
+  getHotCommentTagStatistics : function(pid, done, fail){
+    var url = 'http://s.club.jd.com/productpage/p-'+ pid +'-s-0-t-3-p-0.html';
+    var data = {};
+    $.getJSON(url, data, function(data){
+      done && done(data);
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+      fail && fail();
+    });
+  },
+
+  reportHotTags : function(product_id, tags, done, fail){
+    var url = this.server_host + '/index.php/Admin/ReceiptApi/report_hot_tags';
+    var post_data = {
+      host_id : this.client_id,
+      app_secret : this.app_secret,
+      tags : tags,
+      item_id : product_id
+    };
+
+    $.post(url, post_data, function(data) {
+      done && done(data);
+    },'Json').fail(function(jqXHR, textStatus, errorThrown) {
+      fail && fail();
+    })
   }
-	
 };
